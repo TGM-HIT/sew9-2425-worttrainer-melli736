@@ -1,20 +1,19 @@
 /**
- * Die Klasse WordImagePair repräsentiert ein Paar aus einem Wort und einer Bild-URL, das Bild zeigt den Schülern, welches
- * Wor sie eintippen sollen.
- * Sie wird verwendet, um die Wort-Bild-Zuordnungen im Rechtschreibtrainer zu verwalten.
+ * The WordImagePair class represents a pair consisting of a word and an image URL.
+ * It is used to manage the word-image pairs in the spelling trainer.
  *
- * Ein WordImagePair muss immer in einem gültigen Zustand sein. Das Wort und die Bild-URL
- * dürfen nicht null oder leer sein, und die URL muss ein gültiges URL-Format haben.
+ * A WordImagePair must always be in a valid state. The word and image URL cannot be null or empty,
+ * and the URL must be in a valid URL format.
  */
 public class WordImagePair {
     private String word;
     private String imageUrl;
 
     /**
-     * Konstruktor
-     * @param word Das Wort, das dem Bild zugeordnet wird.
-     * @param imageUrl Die URL des Bildes, die mit dem Wort verknüpft ist.
-     * @throws IllegalArgumentException wenn das Wort oder die URL ungültig sind.
+     * Constructor
+     * @param word The word associated with the image.
+     * @param imageUrl The URL of the image associated with the word.
+     * @throws IllegalArgumentException if the word or URL is invalid.
      */
     public WordImagePair(String word, String imageUrl) {
         this.word = word;
@@ -23,34 +22,34 @@ public class WordImagePair {
     }
 
     /**
-     * Gibt das Wort zurück, das mit diesem WordImagePair verbunden ist.
-     * @return Das Wort.
+     * Returns the word associated with this WordImagePair.
+     * @return The word.
      */
     public String getWord() {
         return word;
     }
 
     /**
-     * Gibt die Bild-URL zurück, die zu diesem WordImagePair gehört.
-     * @return Die Bild-URL.
+     * Returns the image URL associated with this WordImagePair.
+     * @return The image URL.
      */
     public String getImageUrl() {
         return imageUrl;
     }
 
     /**
-     * Validiert das WordImagePair. Überprüft, ob das Wort und die Bild-URL gültig sind.
-     * @throws IllegalArgumentException wenn das Wort oder die Bild-URL null, leer oder ungültig sind.
+     * Validates the WordImagePair. Ensures that the word and image URL are valid.
+     * @throws IllegalArgumentException if the word or image URL is null, empty, or invalid.
      */
     private void validate() {
         if (word == null || word.trim().isEmpty()) {
-            throw new IllegalArgumentException("Das Wort darf nicht null oder leer sein.");
+            throw new IllegalArgumentException("The word cannot be null or empty.");
         }
         if (imageUrl == null || imageUrl.trim().isEmpty()) {
-            throw new IllegalArgumentException("Die Bild-URL darf nicht null oder leer sein.");
+            throw new IllegalArgumentException("The image URL cannot be null or empty.");
         }
         if (!imageUrl.matches("^(http|https)://.*$")) {
-            throw new IllegalArgumentException("Ungültiges URL-Format.");
+            throw new IllegalArgumentException("Invalid URL format.");
         }
     }
 }

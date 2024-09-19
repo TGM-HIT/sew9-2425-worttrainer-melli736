@@ -2,10 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Die Klasse SpellingTrainer stellt die Hauptlogik für den Rechtschreibtrainer bereit.
- * Sie verwaltet eine Liste von Wort-Bild-Paaren und führt eine Statistik darüber, wie oft insgesamt,
- * korrekt oder falsch geraten wurde. Sie bietet Funktionen zum Auswählen eines Paares und zum
- * Überprüfen von Benutzereingaben.
+ * The SpellingTrainer class manages the main logic for the spelling trainer.
+ * It maintains a list of word-image pairs and tracks statistics on how many times
+ * words were attempted, how many were correct, and how many were incorrect.
+ * It provides functions to select a word-image pair and to check user input.
  */
 public class SpellingTrainer {
     private List<WordImagePair> wordImagePairs;
@@ -16,7 +16,7 @@ public class SpellingTrainer {
     private List<WordImagePair> remainingPairs;
 
     /**
-     * Standard-Konstruktor zur Initialisierung eines neuen SpellingTrainer mit einer leeren Liste.
+     * Default constructor to initialize a new SpellingTrainer with an empty list.
      */
     public SpellingTrainer() {
         this.wordImagePairs = new ArrayList<>();
@@ -28,16 +28,16 @@ public class SpellingTrainer {
     }
 
     /**
-     * Konstruktor zur Initialisierung eines neuen SpellingTrainer mit einer bereits gefüllten Liste.
+     * Constructor to initialize a new SpellingTrainer with a pre-filled list of word-image pairs.
      *
-     * @param wordImagePairs Die Liste von Wort-Bild-Paaren, die im Trainer verwendet wird.
+     * @param wordImagePairs The list of word-image pairs to be used in the trainer.
      */
     public SpellingTrainer(List<WordImagePair> wordImagePairs) {
         if (wordImagePairs == null || wordImagePairs.isEmpty()) {
-            throw new IllegalArgumentException("Die Liste der Wort-Bild-Paare darf nicht null oder leer sein.");
+            throw new IllegalArgumentException("The list of word-image pairs cannot be null or empty.");
         }
         this.wordImagePairs = new ArrayList<>(wordImagePairs);
-        this.remainingPairs = new ArrayList<>(wordImagePairs); // Kopie für die Session
+        this.remainingPairs = new ArrayList<>(wordImagePairs); // Copy for the session
         this.currentPair = null;
         this.totalAttempts = 0;
         this.correctAttempts = 0;
@@ -45,46 +45,59 @@ public class SpellingTrainer {
     }
 
     /**
-     * Wählt ein zufälliges Wort-Bild-Paar aus der verbleibenden Liste der Paare aus.
-     * Wenn alle Paare ausgewählt wurden, wird die Liste zurückgesetzt.
+     * Selects a random word-image pair from the remaining list.
+     * If all pairs have been selected, the list is reset.
      *
-     * @throws IllegalStateException wenn keine Wort-Bild-Paare verfügbar sind.
+     * @throws IllegalStateException if no word-image pairs are available.
      */
     public void selectRandomPair() {
         if (remainingPairs.isEmpty()) {
-            remainingPairs = new ArrayList<>(wordImagePairs); // Liste zurücksetzen, wenn alle Paare verwendet wurden
+            remainingPairs = new ArrayList<>(wordImagePairs); // Reset the list when all pairs have been used
         }
         int index = (int) (Math.random() * remainingPairs.size());
         currentPair = remainingPairs.remove(index);
     }
 
     /**
-     * Gibt die URL des aktuellen ausgewählten Bildes zurück.
+     * Returns the URL of the currently selected image.
      *
-     * @return Die Bild-URL des aktuellen Paares.
-     * @throws IllegalStateException wenn kein Paar ausgewählt wurde.
+     * @return The image URL of the current pair.
+     * @throws IllegalStateException if no pair has been selected.
      */
     public String getCurrentImageUrl() {
         if (currentPair == null) {
-            throw new IllegalStateException("Kein Wort-Bild-Paar ausgewählt.");
+            throw new IllegalStateException("No word-image pair selected.");
         }
         return currentPair.getImageUrl();
     }
 
     /**
-     * Überprüft die Eingabe des Nutzers und aktualisiert die Statistik entsprechend.
+     * Returns the word of the currently selected Pair.
      *
-     * @param input Die Eingabe des Nutzers.
-     * @return true, wenn die Eingabe korrekt ist; false, wenn sie falsch ist.
-     * @throws IllegalStateException wenn kein Paar ausgewählt ist.
-     * @throws IllegalArgumentException wenn die Eingabe null ist.
+     * @return The image URL of the current pair.
+     * @throws IllegalStateException if no pair has been selected.
+     */
+    public String getCurrentWord() {
+        if (currentPair == null) {
+            throw new IllegalStateException("No word-image pair selected.");
+        }
+        return currentPair.getWord();
+    }
+
+    /**
+     * Checks the user's input and updates the statistics accordingly.
+     *
+     * @param input The user's input.
+     * @return true if the input is correct; false if it is incorrect.
+     * @throws IllegalStateException if no pair has been selected.
+     * @throws IllegalArgumentException if the input is null.
      */
     public boolean spellingCheck(String input) {
         if (currentPair == null) {
-            throw new IllegalStateException("Kein Wort-Bild-Paar ausgewählt.");
+            throw new IllegalStateException("No word-image pair selected.");
         }
         if (input == null) {
-            throw new IllegalArgumentException("Eingabe darf nicht null sein.");
+            throw new IllegalArgumentException("Input cannot be null.");
         }
         totalAttempts++;
         if (currentPair.getWord().equalsIgnoreCase(input.trim())) {
@@ -98,18 +111,18 @@ public class SpellingTrainer {
     }
 
     /**
-     * Berechnet und gibt die aktuelle Statistik der Versuche als String zurück.
+     * Calculates and returns the current statistics as a string.
      *
-     * @return Die Statistik als String.
+     * @return The statistics as a string.
      */
     public String getStatistics() {
-        return "Gesamtversuche: " + totalAttempts + ", korrekte Versuche: " + correctAttempts + ", kalsche Versuche: " + incorrectAttempts;
+        return "Total attempts: " + totalAttempts + ", correct attempts: " + correctAttempts + ", incorrect attempts: " + incorrectAttempts;
     }
 
     /**
-     * Gibt die Anzahl der verbleibenden Paare zurück.
+     * Checks if there are remaining pairs in the current session.
      *
-     * @return Die Anzahl der verbleibenden Wort-Bild-Paare.
+     * @return true if there are remaining word-image pairs; false otherwise.
      */
     public boolean hasRemainingPairs() {
         return !remainingPairs.isEmpty();
