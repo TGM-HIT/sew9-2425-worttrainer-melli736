@@ -46,12 +46,43 @@ public class SpellingTrainer {
         this.incorrectAttempts = 0;
     }
 
-    /**
-     * Selects a random word-image pair from the remaining list.
-     * If all pairs have been selected, the list is reset.
-     *
-     * @throws IllegalStateException if no word-image pairs are available.
-     */
+    // Getter and Setter methods for totalAttempts, correctAttempts, and incorrectAttempts
+    public int getTotalAttempts() {
+        return totalAttempts;
+    }
+
+    public void setTotalAttempts(int totalAttempts) {
+        this.totalAttempts = totalAttempts;
+    }
+
+    public int getCorrectAttempts() {
+        return correctAttempts;
+    }
+
+    public void setCorrectAttempts(int correctAttempts) {
+        this.correctAttempts = correctAttempts;
+    }
+
+    public int getIncorrectAttempts() {
+        return incorrectAttempts;
+    }
+
+    public void setIncorrectAttempts(int incorrectAttempts) {
+        this.incorrectAttempts = incorrectAttempts;
+    }
+
+    public List<WordImagePair> getRemainingPairs() {
+        return remainingPairs;
+    }
+
+    public void setRemainingPairs(List<WordImagePair> remainingPairs) {
+        this.remainingPairs = remainingPairs;
+    }
+
+    public List<WordImagePair> getWordImagePairs() {
+        return wordImagePairs;
+    }
+
     public void selectRandomPair() {
         if (remainingPairs.isEmpty()) {
             remainingPairs = new ArrayList<>(wordImagePairs); // Reset the list when all pairs have been used
@@ -60,12 +91,6 @@ public class SpellingTrainer {
         currentPair = remainingPairs.remove(index);
     }
 
-    /**
-     * Returns the URL of the currently selected image.
-     *
-     * @return The image URL of the current pair.
-     * @throws IllegalStateException if no pair has been selected.
-     */
     public String getCurrentImageUrl() {
         if (currentPair == null) {
             throw new IllegalStateException("No word-image pair selected.");
@@ -73,12 +98,6 @@ public class SpellingTrainer {
         return currentPair.getImageUrl();
     }
 
-    /**
-     * Returns the word of the currently selected Pair.
-     *
-     * @return The image URL of the current pair.
-     * @throws IllegalStateException if no pair has been selected.
-     */
     public String getCurrentWord() {
         if (currentPair == null) {
             throw new IllegalStateException("No word-image pair selected.");
@@ -86,14 +105,6 @@ public class SpellingTrainer {
         return currentPair.getWord();
     }
 
-    /**
-     * Checks the user's input and updates the statistics accordingly.
-     *
-     * @param input The user's input.
-     * @return true if the input is correct; false if it is incorrect.
-     * @throws IllegalStateException if no pair has been selected.
-     * @throws IllegalArgumentException if the input is null.
-     */
     public boolean spellingCheck(String input) {
         if (currentPair == null) {
             throw new IllegalStateException("No word-image pair selected.");
@@ -112,28 +123,11 @@ public class SpellingTrainer {
         }
     }
 
-    public List<WordImagePair> getWordImagePairs() {
-        return wordImagePairs;
-    }
-
-
-    /**
-     * Calculates and returns the current statistics as a string.
-     *
-     * @return The statistics as a string.
-     */
     public String getStatistics() {
         return "Total attempts: " + totalAttempts + ", correct attempts: " + correctAttempts + ", incorrect attempts: " + incorrectAttempts;
     }
 
-    /**
-     * Checks if there are remaining pairs in the current session.
-     *
-     * @return true if there are remaining word-image pairs; false otherwise.
-     */
     public boolean hasRemainingPairs() {
         return !remainingPairs.isEmpty();
     }
-
-
 }
