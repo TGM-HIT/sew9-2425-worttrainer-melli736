@@ -91,7 +91,7 @@ public class SpellingTrainer {
         currentPair = remainingPairs.remove(index);
     }
 
-    public String getCurrentImageUrl() {
+    public String getCurrentImage() {
         if (currentPair == null) {
             throw new IllegalStateException("No word-image pair selected.");
         }
