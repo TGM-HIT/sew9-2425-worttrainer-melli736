@@ -51,32 +51,18 @@ public class SpellingTrainer {
         return totalAttempts;
     }
 
-    public void setTotalAttempts(int totalAttempts) {
-        this.totalAttempts = totalAttempts;
-    }
 
     public int getCorrectAttempts() {
         return correctAttempts;
     }
 
-    public void setCorrectAttempts(int correctAttempts) {
-        this.correctAttempts = correctAttempts;
-    }
 
     public int getIncorrectAttempts() {
         return incorrectAttempts;
     }
 
-    public void setIncorrectAttempts(int incorrectAttempts) {
-        this.incorrectAttempts = incorrectAttempts;
-    }
-
     public List<WordImagePair> getRemainingPairs() {
         return remainingPairs;
-    }
-
-    public void setRemainingPairs(List<WordImagePair> remainingPairs) {
-        this.remainingPairs = remainingPairs;
     }
 
     public List<WordImagePair> getWordImagePairs() {
@@ -129,5 +115,13 @@ public class SpellingTrainer {
 
     public boolean hasRemainingPairs() {
         return !remainingPairs.isEmpty();
+    }
+
+    public void resetTrainer() {
+        remainingPairs = wordImagePairs;
+        selectRandomPair();
+        this.totalAttempts = 0;
+        this.correctAttempts = 0;
+        this.incorrectAttempts = 0;
     }
 }

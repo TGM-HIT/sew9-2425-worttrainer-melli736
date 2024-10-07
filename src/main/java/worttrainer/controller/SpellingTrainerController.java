@@ -22,9 +22,10 @@ public class SpellingTrainerController {
     private final JLabel progressLabel;
     private final JLabel statsLabel;
     private final JButton nextButton;
+    private final JFrame view;
 
     public SpellingTrainerController(SpellingTrainer trainer, JsonPersistence persistence, JTextField inputField,
-                                     JLabel imageLabel, JLabel progressLabel, JLabel statsLabel, JButton nextButton) {
+                                     JLabel imageLabel, JLabel progressLabel, JLabel statsLabel, JButton nextButton, JFrame view) {
         this.trainer = trainer;
         this.persistence = persistence;
         this.inputField = inputField;
@@ -32,12 +33,11 @@ public class SpellingTrainerController {
         this.progressLabel = progressLabel;
         this.statsLabel = statsLabel;
         this.nextButton = nextButton;
+        this.view = view;
 
-        // Select the first word-image pair right away to avoid IllegalStateException
         trainer.selectRandomPair();
-
         nextButton.addActionListener(new NextButtonListener());
-        updateView(); // Update view with the initial word-image pair
+        updateView();
     }
 
     private class NextButtonListener implements ActionListener {
@@ -52,9 +52,9 @@ public class SpellingTrainerController {
         boolean correct = trainer.spellingCheck(userInput);
 
         if (correct) {
-            JOptionPane.showMessageDialog(null, "Correct!");
+            JOptionPane.showMessageDialog(view, "Correct!");
         } else {
-            JOptionPane.showMessageDialog(null, "Incorrect! The word was: " + trainer.getCurrentWord());
+            JOptionPane.showMessageDialog(view, "Incorrect! The word was: " + trainer.getCurrentWord());
         }
 
         if (trainer.hasRemainingPairs()) {
@@ -68,13 +68,12 @@ public class SpellingTrainerController {
     private void updateView() {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Stelle sicher, dass der URL korrekt ist
                 String imageUrl = trainer.getCurrentImage();
                 BufferedImage image = ImageIO.read(new URL(imageUrl));
                 imageLabel.setIcon(new ImageIcon(image));
             } catch (IOException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error loading image: " + e.getMessage());
+                JOptionPane.showMessageDialog(view, "Error loading image: " + e.getMessage());
             }
 
             progressLabel.setText("Progress: " + trainer.getTotalAttempts() + "/" + trainer.getWordImagePairs().size());
@@ -84,12 +83,33 @@ public class SpellingTrainerController {
     }
 
     private void showFinalStats() {
-        JOptionPane.showMessageDialog(null, trainer.getStatistics());
-        nextButton.setEnabled(false);  // Disable "Next" button after the game is finished
+        String statistics = trainer.getStatistics();
+        Object[] options = {"Quit", "Restart"};
+        int choice = JOptionPane.showOptionDialog(view, statistics, "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            saveGameAndExit();
+        } else if (choice == JOptionPane.NO_OPTION) {
+            restartGame();
+        }
+    }
+
+    private void saveGameAndExit() {
+        // Hier kann der Speicherpfad festgelegt werden oder eine Dialogaufforderung zur Eingabe des Pfads hinzugefügt werden
+        String filePath = "saved_game.json"; // Beispielpfad
+        saveGame(filePath);
+        System.exit(0);
+    }
+
+    private void restartGame() {
+        // Trainer zurücksetzen und ein neues Spiel starten
+        trainer.resetTrainer();  // Eine Methode zum Zurücksetzen des Trainers
+        updateView();
+        nextButton.setEnabled(true);  // Den "Next" Button wieder aktivieren
     }
 
     public void saveGame(String filePath) {
-        persistence.saveTrainerState(trainer, filePath);
-        JOptionPane.showMessageDialog(null, "Game saved!");
+        persistence.saveTrainerState(trainer, "/Users/melli/Library/CloudStorage/OneDrive-tgm-DieSchulederTechnik/5BHIT/SEW/WorttrainerReloaded/resources/savedSpellingTrainer.json");
+        JOptionPane.showMessageDialog(view, "Game saved!");
     }
 }

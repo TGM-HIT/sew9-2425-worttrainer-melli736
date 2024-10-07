@@ -25,25 +25,21 @@ public class SpellingTrainerView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Zentriere das Fenster
         setLocationRelativeTo(null);
 
-        // Create input field and buttons
         inputField = new JTextField(20);
         nextButton = new JButton("Next");
         saveButton = new JButton("Save");
 
-        // Create labels
         imageLabel = new JLabel();
         progressLabel = new JLabel("Progress: 0/0");
         statsLabel = new JLabel("Correct: 0 Incorrect: 0");
 
-        // Layout components
-        JPanel centerPanel = new JPanel(new GridBagLayout()); // Verwende GridBagLayout für zentrierte Anordnung
+        JPanel centerPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER; // Zentriere das Bild
+        gbc.anchor = GridBagConstraints.CENTER;
         centerPanel.add(imageLabel, gbc);
 
         JPanel southPanel = new JPanel();
@@ -59,8 +55,7 @@ public class SpellingTrainerView extends JFrame {
         add(southPanel, BorderLayout.SOUTH);
         add(northPanel, BorderLayout.NORTH);
 
-        // Initialize controller
-        SpellingTrainerController controller = new SpellingTrainerController(trainer, persistence, inputField, imageLabel, progressLabel, statsLabel, nextButton);
+        SpellingTrainerController controller = new SpellingTrainerController(trainer, persistence, inputField, imageLabel, progressLabel, statsLabel, nextButton, this);
 
         saveButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
