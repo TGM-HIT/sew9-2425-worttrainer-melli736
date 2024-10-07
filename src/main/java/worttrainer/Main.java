@@ -20,13 +20,12 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         List<WordImagePair> pairs = new ArrayList<>();
-        pairs.add(new WordImagePair("Dog", "../../resources/hund-im-herbst-760x570.jpg"));
-        pairs.add(new WordImagePair("Cat", "../../resources/kitty-cat-kitten-pet-45201.jpeg"));
-        pairs.add(new WordImagePair("Bird", "../../resources/photo-1486365227551-f3f90034a57c.jpeg"));
-        pairs.add(new WordImagePair("Tree", "../../resources/2048x1365-Oak-trees-SEO-GettyImages-90590330-b6bfe8b.jpg.webp"));
+        pairs.add(new WordImagePair("Dog", "https://upload.wikimedia.org/wikipedia/commons/4/42/Harzer_Fuchs_Hündin_2.jpg"));
+        pairs.add(new WordImagePair("Cat", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Hauskatze_langhaar.jpg/600px-Hauskatze_langhaar.jpg"));
+        pairs.add(new WordImagePair("Bird", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Crested_Tern_Tasmania_%28edit%29.jpg/600px-Crested_Tern_Tasmania_%28edit%29.jpg"));
+        pairs.add(new WordImagePair("Tree", "https://upload.wikimedia.org/wikipedia/commons/5/56/Sequoiadendron_giganteum_at_Kenilworth_Castle.jpg"));
 
         SpellingTrainer trainer = new SpellingTrainer(pairs);
-        // Ask the user if they want to start a new game or load a saved session
 
         // Launch GUI on the Event Dispatch Thread (EDT)
         SwingUtilities.invokeLater(() -> new SpellingTrainerView(trainer, persistence).setVisible(true));

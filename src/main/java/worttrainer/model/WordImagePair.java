@@ -50,8 +50,8 @@ public class WordImagePair {
         if (imageUrl == null || imageUrl.trim().isEmpty()) {
             throw new IllegalArgumentException("The image URL cannot be null or empty.");
         }
-        if (!imageUrl.matches("^\\.\\./\\.\\./resources/.*\\.(jpg|jpeg|img|webp)$")) {
-            throw new IllegalArgumentException("Invalid relative path format.");
+        if (!imageUrl.matches("^(http|https)://.*$")) {
+            throw new IllegalArgumentException("Invalid URL format.");
         }
     }
 }

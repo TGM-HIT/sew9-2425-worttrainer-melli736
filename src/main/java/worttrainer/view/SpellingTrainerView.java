@@ -63,7 +63,5 @@ public class SpellingTrainerView extends JFrame {
                 controller.saveGame(file.getAbsolutePath());
             }
         });
-
-        // Show the first image (controller handles this on initialization)
     }
 }

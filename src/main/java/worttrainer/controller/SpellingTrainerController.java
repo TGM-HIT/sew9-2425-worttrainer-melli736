@@ -3,9 +3,13 @@ package worttrainer.controller;
 import worttrainer.model.SpellingTrainer;
 import worttrainer.model.JsonPersistence;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * The controller for the spelling trainer game, handling button actions and game progress.
@@ -62,10 +66,21 @@ public class SpellingTrainerController {
     }
 
     private void updateView() {
-        imageLabel.setIcon(new ImageIcon(trainer.getCurrentImage()));
-        progressLabel.setText("Progress: " + trainer.getTotalAttempts() + "/" + trainer.getWordImagePairs().size());
-        statsLabel.setText("Correct: " + trainer.getCorrectAttempts() + " Incorrect: " + trainer.getIncorrectAttempts());
-        inputField.setText("");
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Stelle sicher, dass der URL korrekt ist
+                String imageUrl = trainer.getCurrentImage();
+                BufferedImage image = ImageIO.read(new URL(imageUrl));
+                imageLabel.setIcon(new ImageIcon(image));
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error loading image: " + e.getMessage());
+            }
+
+            progressLabel.setText("Progress: " + trainer.getTotalAttempts() + "/" + trainer.getWordImagePairs().size());
+            statsLabel.setText("Correct: " + trainer.getCorrectAttempts() + " Incorrect: " + trainer.getIncorrectAttempts());
+            inputField.setText("");
+        });
     }
 
     private void showFinalStats() {
