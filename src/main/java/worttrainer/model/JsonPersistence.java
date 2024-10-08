@@ -1,53 +1,82 @@
 package worttrainer.model;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.*;
-import java.lang.reflect.Type;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /**
  * Implements JSON format saving and loading for the SpellingTrainer.
+ * This class is responsible for persisting the trainer's state to and from a JSON file.
+ * @author Melissa Wallpach
+ * @version 2024-10-08
  */
-public class JsonPersistence implements Persistence{
-    private final Gson gson;
+public class JsonPersistence implements Persistence {
 
-    public JsonPersistence() {
-        this.gson = new Gson();
-    }
+    /**
+     * Constructor for JsonPersistence.
+     */
+    public JsonPersistence() {}
 
-    public void saveTrainerState(SpellingTrainer trainer, String filePath) {
-        try (Writer writer = new FileWriter(filePath)) {
-            GameState state = new GameState(trainer);
-            gson.toJson(state, writer);
-        } catch (IOException e) {
+    /**
+     * Loads the state of the trainer from a JSON file.
+     * @param trainer the SpellingTrainer instance where the data will be loaded into.
+     */
+    @Override
+    public void load(SpellingTrainer trainer) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get("spellingTrainer.json")));
+            JSONObject jsonObject = new JSONObject(content);
+
+            int total = jsonObject.optInt("total", 0);
+            trainer.setTotalAttempts(total);
+
+            int correct = jsonObject.optInt("correct", 0);
+            trainer.setCorrectAttempts(correct);
+
+            JSONArray words = jsonObject.getJSONArray("words");
+            ArrayList<WordImagePair> wordList = new ArrayList<>();
+            for (Object o : words) {
+                JSONObject wordObject = (JSONObject) o;
+                String word = wordObject.getString("word");
+                String url = wordObject.getString("url");
+                wordList.add(new WordImagePair(word, url));
+            }
+
+            trainer.setWordImagePairs(wordList);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public SpellingTrainer loadTrainerState(String filePath) {
-        try (Reader reader = new FileReader(filePath)) {
-            GameState state = gson.fromJson(reader, GameState.class);
-            return new SpellingTrainer(state.wordImagePairs);
-        } catch (IOException e) {
+    /**
+     * Saves the state of the trainer to a JSON file.
+     * @param trainer the SpellingTrainer instance whose data will be saved.
+     */
+    @Override
+    public void save(SpellingTrainer trainer) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("total", trainer.getTotalAttempts());
+            jsonObject.put("correct", trainer.getCorrectAttempts());
+
+            JSONArray words = new JSONArray();
+            for (WordImagePair word : trainer.getWordImagePairs()) {
+                JSONObject wordObject = new JSONObject();
+                wordObject.put("word", word.getWord());
+                wordObject.put("url", word.getImageUrl());
+                words.put(wordObject);
+            }
+
+            jsonObject.put("words", words);
+            Files.write(Paths.get("spellingTrainer.json"), jsonObject.toString(4).getBytes());
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        return null;
-    }
-
-    // A class to represent the game state for saving/loading.
-    private static class GameState {
-        List<WordImagePair> wordImagePairs;
-        int totalAttempts;
-        int correctAttempts;
-        int incorrectAttempts;
-
-        public GameState(SpellingTrainer trainer) {
-            this.wordImagePairs = trainer.getWordImagePairs();
-            this.totalAttempts = trainer.getTotalAttempts();
-            this.correctAttempts = trainer.getCorrectAttempts();
-            this.incorrectAttempts = trainer.getIncorrectAttempts();
         }
     }
 }

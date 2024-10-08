@@ -1,77 +1,40 @@
 package worttrainer.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * The SpellingTrainer class manages the main logic for the spelling trainer.
- * It maintains a list of word-image pairs and tracks statistics on how many times
- * words were attempted, how many were correct, and how many were incorrect.
- * It provides functions to select a word-image pair and to check user input.
+ * The SpellingTrainer class manages the core logic of the spelling trainer.
+ * It holds the list of word-image pairs and tracks the total attempts,
+ * correct attempts, and incorrect attempts made by the user.
+ * @author Melissa Wallpach
+ * @version 2024-10-08
  */
 public class SpellingTrainer {
-    private final List<WordImagePair> wordImagePairs;
+    private List<WordImagePair> wordImagePairs;
     private WordImagePair currentPair;
     private int totalAttempts;
     private int correctAttempts;
     private int incorrectAttempts;
     private List<WordImagePair> remainingPairs;
+    private final Persistence storage = new JsonPersistence();
 
     /**
-     * Default constructor to initialize a new SpellingTrainer with an empty list.
+     * Default constructor that initializes the SpellingTrainer and loads the word pairs.
      */
     public SpellingTrainer() {
-        this.wordImagePairs = new ArrayList<>();
-        this.remainingPairs = new ArrayList<>();
-        this.currentPair = null;
-        this.totalAttempts = 0;
-        this.correctAttempts = 0;
-        this.incorrectAttempts = 0;
+        this.storage.load(this);
+        setRemainingPairs(this.getWordImagePairs());
+        selectRandomPair();
     }
 
     /**
-     * Constructor to initialize a new SpellingTrainer with a pre-filled list of word-image pairs.
-     *
-     * @param wordImagePairs The list of word-image pairs to be used in the trainer.
+     * Selects a random word-image pair from the remaining list of pairs.
      */
-    public SpellingTrainer(List<WordImagePair> wordImagePairs) {
-        if (wordImagePairs == null || wordImagePairs.isEmpty()) {
-            throw new IllegalArgumentException("The list of word-image pairs cannot be null or empty.");
-        }
-        this.wordImagePairs = new ArrayList<>(wordImagePairs);
-        this.remainingPairs = new ArrayList<>(wordImagePairs); // Copy for the session
-        this.currentPair = null;
-        this.totalAttempts = 0;
-        this.correctAttempts = 0;
-        this.incorrectAttempts = 0;
-    }
-
-    // Getter and Setter methods for totalAttempts, correctAttempts, and incorrectAttempts
-    public int getTotalAttempts() {
-        return totalAttempts;
-    }
-
-
-    public int getCorrectAttempts() {
-        return correctAttempts;
-    }
-
-
-    public int getIncorrectAttempts() {
-        return incorrectAttempts;
-    }
-
-    public List<WordImagePair> getRemainingPairs() {
-        return remainingPairs;
-    }
-
-    public List<WordImagePair> getWordImagePairs() {
-        return wordImagePairs;
-    }
-
     public void selectRandomPair() {
         if (remainingPairs.isEmpty()) {
-            remainingPairs = new ArrayList<>(wordImagePairs); // Reset the list when all pairs have been used
+            remainingPairs = new ArrayList<>(wordImagePairs);
         }
         int index = (int) (Math.random() * remainingPairs.size());
         currentPair = remainingPairs.remove(index);
@@ -117,11 +80,58 @@ public class SpellingTrainer {
         return !remainingPairs.isEmpty();
     }
 
-    public void resetTrainer() {
-        remainingPairs = wordImagePairs;
+    public void store() {
+        this.storage.save(this);
+    }
+
+    public void load() {
+        this.storage.load(this);
         selectRandomPair();
-        this.totalAttempts = 0;
-        this.correctAttempts = 0;
-        this.incorrectAttempts = 0;
+    }
+
+    // GETTER & SETTER METHODS
+
+    public List<WordImagePair> getWordImagePairs() {
+        return Collections.unmodifiableList(wordImagePairs);
+    }
+
+    public WordImagePair getCurrentPair() {
+        return currentPair;
+    }
+
+    public int getTotalAttempts() {
+        return totalAttempts;
+    }
+
+    public int getCorrectAttempts() {
+        return correctAttempts;
+    }
+
+    public int getIncorrectAttempts() {
+        return incorrectAttempts;
+    }
+
+    public List<WordImagePair> getRemainingPairs() {
+        return remainingPairs;
+    }
+
+    public void setRemainingPairs(List<WordImagePair> remainingPairs) {
+        this.remainingPairs = new ArrayList<>(remainingPairs);
+    }
+
+    public void setTotalAttempts(int totalAttempts) {
+        this.totalAttempts = totalAttempts;
+    }
+
+    public void setCorrectAttempts(int correctAttempts) {
+        this.correctAttempts = correctAttempts;
+    }
+
+    public void setIncorrectAttempts(int incorrectAttempts) {
+        this.incorrectAttempts = incorrectAttempts;
+    }
+
+    public void setWordImagePairs(List<WordImagePair> wordlist) {
+        this.wordImagePairs = new ArrayList<>(wordlist);
     }
 }

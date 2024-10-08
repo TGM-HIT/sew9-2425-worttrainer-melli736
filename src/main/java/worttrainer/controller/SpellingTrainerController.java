@@ -1,115 +1,98 @@
 package worttrainer.controller;
 
 import worttrainer.model.SpellingTrainer;
-import worttrainer.model.JsonPersistence;
+import worttrainer.view.*;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 
 /**
- * The controller for the spelling trainer game, handling button actions and game progress.
+ * Controller-Class, that represents the connection between view and model.
+ * It handles user inputs, view updates, and the coordination between model and view.
+ * @author Melissa Wallpach
+ * @version 2024-10-08
  */
-public class SpellingTrainerController {
-    private final SpellingTrainer trainer;
-    private final JsonPersistence persistence;
-    private final JTextField inputField;
-    private final JLabel imageLabel;
-    private final JLabel progressLabel;
-    private final JLabel statsLabel;
-    private final JButton nextButton;
-    private final JFrame view;
+public class SpellingTrainerController implements ActionListener {
+    private final Frame f;
+    private Panel panel;
+    private SpellingTrainer trainer;
 
-    public SpellingTrainerController(SpellingTrainer trainer, JsonPersistence persistence, JTextField inputField,
-                                     JLabel imageLabel, JLabel progressLabel, JLabel statsLabel, JButton nextButton, JFrame view) {
-        this.trainer = trainer;
-        this.persistence = persistence;
-        this.inputField = inputField;
-        this.imageLabel = imageLabel;
-        this.progressLabel = progressLabel;
-        this.statsLabel = statsLabel;
-        this.nextButton = nextButton;
-        this.view = view;
-
-        trainer.selectRandomPair();
-        nextButton.addActionListener(new NextButtonListener());
-        updateView();
+    /**
+     * Constructor that initializes the trainer, panel, and frame.
+     */
+    public SpellingTrainerController() {
+        this.trainer = new SpellingTrainer();
+        try {
+            this.panel = new Panel(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.f = new Frame(this.panel);
     }
 
-    private class NextButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            handleNextButton();
+    /**
+     * This method is called whenever an action event is triggered in the view,
+     * such as saving, loading, or checking the spelling input.
+     * @param e the event to be processed.
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String actionCommand = e.getActionCommand();
+        switch (actionCommand) {
+            case "input":
+                if (this.trainer.spellingCheck(this.panel.getInput())) {
+                    trainer.setCorrectAttempts(getCorrect());
+                }
+                trainer.setTotalAttempts(getTotal());
+                if(trainer.hasRemainingPairs()) {
+                    this.trainer.selectRandomPair();
+                    this.panel.nextWord(this.trainer.getCurrentImage());
+                } else {
+                    this.f.dispose();
+                }
+                break;
+            case "save":
+                this.trainer.store();
+                break;
+            case "load":
+                this.trainer.load();
+                this.panel.nextWord(getUrl());
+                break;
+            default:
+                System.out.println("Unknown action command.");
         }
     }
 
-    private void handleNextButton() {
-        String userInput = inputField.getText().trim();
-        boolean correct = trainer.spellingCheck(userInput);
-
-        if (correct) {
-            JOptionPane.showMessageDialog(view, "Correct!");
-        } else {
-            JOptionPane.showMessageDialog(view, "Incorrect! The word was: " + trainer.getCurrentWord());
-        }
-
-        if (trainer.hasRemainingPairs()) {
-            trainer.selectRandomPair();
-            updateView();
-        } else {
-            showFinalStats();
-        }
+    /**
+     * Main method to run the SpellingTrainerController.
+     * @param args command-line arguments (not used).
+     */
+    public static void main(String[] args) {
+        new SpellingTrainerController();
     }
 
-    private void updateView() {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                String imageUrl = trainer.getCurrentImage();
-                BufferedImage image = ImageIO.read(new URL(imageUrl));
-                imageLabel.setIcon(new ImageIcon(image));
-            } catch (IOException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(view, "Error loading image: " + e.getMessage());
-            }
-
-            progressLabel.setText("Progress: " + trainer.getTotalAttempts() + "/" + trainer.getWordImagePairs().size());
-            statsLabel.setText("Correct: " + trainer.getCorrectAttempts() + " Incorrect: " + trainer.getIncorrectAttempts());
-            inputField.setText("");
-        });
+    /**
+     * Gets the current image URL from the trainer.
+     * @return the current image URL.
+     */
+    public String getUrl() {
+        return trainer.getCurrentImage();
     }
 
-    private void showFinalStats() {
-        String statistics = trainer.getStatistics();
-        Object[] options = {"Quit", "Restart"};
-        int choice = JOptionPane.showOptionDialog(view, statistics, "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-
-        if (choice == JOptionPane.YES_OPTION) {
-            saveGameAndExit();
-        } else if (choice == JOptionPane.NO_OPTION) {
-            restartGame();
-        }
+    /**
+     * Gets the number of correct spelling attempts.
+     * @return the number of correct attempts.
+     */
+    public int getCorrect() {
+        return this.trainer.getCorrectAttempts();
     }
 
-    private void saveGameAndExit() {
-        // Hier kann der Speicherpfad festgelegt werden oder eine Dialogaufforderung zur Eingabe des Pfads hinzugefügt werden
-        String filePath = "saved_game.json"; // Beispielpfad
-        saveGame(filePath);
-        System.exit(0);
-    }
-
-    private void restartGame() {
-        // Trainer zurücksetzen und ein neues Spiel starten
-        trainer.resetTrainer();  // Eine Methode zum Zurücksetzen des Trainers
-        updateView();
-        nextButton.setEnabled(true);  // Den "Next" Button wieder aktivieren
-    }
-
-    public void saveGame(String filePath) {
-        persistence.saveTrainerState(trainer, "/Users/melli/Library/CloudStorage/OneDrive-tgm-DieSchulederTechnik/5BHIT/SEW/WorttrainerReloaded/resources/savedSpellingTrainer.json");
-        JOptionPane.showMessageDialog(view, "Game saved!");
+    /**
+     * Gets the total number of spelling attempts.
+     * @return the total number of attempts.
+     */
+    public int getTotal() {
+        return this.trainer.getTotalAttempts();
     }
 }
