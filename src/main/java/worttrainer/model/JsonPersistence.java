@@ -1,7 +1,6 @@
 package worttrainer.model;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.file.Files;
@@ -15,11 +14,6 @@ import java.util.ArrayList;
  * @version 2024-10-08
  */
 public class JsonPersistence implements Persistence {
-
-    /**
-     * Constructor for JsonPersistence.
-     */
-    public JsonPersistence() {}
 
     /**
      * Loads the state of the trainer from a JSON file.
